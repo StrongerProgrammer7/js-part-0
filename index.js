@@ -15,7 +15,6 @@ const areEqual = (a, b) =>
     // Remember: [] !== []
 };
 
-
 const test = (whatWeTest, actualResult, expectedResult) =>
 {
     if (areEqual(actualResult, expectedResult))
@@ -126,6 +125,7 @@ const getRealType = (value) =>
 
 const getRealTypesOfItems = (arr) =>
 {
+
     const realTypes = [];
     for (let i = 0; i < arr.length; i++)
     {
@@ -137,8 +137,12 @@ const getRealTypesOfItems = (arr) =>
 
 const everyItemHasAUniqueRealType = (arr) =>
 {
-    // Return true if there are no items in array
-    // with the same real type
+    if (arr.length === 0)
+    {
+        return true;
+    }
+    const realTypes = new Set(getRealTypesOfItems(arr));
+    return realTypes.size === arr.length;
 };
 
 const countRealTypes = (arr) =>
