@@ -145,8 +145,33 @@ const everyItemHasAUniqueRealType = (arr) =>
     return realTypes.size === arr.length;
 };
 
+const getMapCountEveryElementsInArray = (arr) =>
+{
+    const map = new Map();
+    for (let i = 0; i < arr.length; i++)
+    {
+        if (map.has(arr[i]) === true)
+        {
+            map.set(arr[i], map.get(arr[i]) + 1);
+        }
+        else
+        {
+            map.set(arr[i], 1);
+        }
+    }
+    return map;
+};
+
 const countRealTypes = (arr) =>
 {
+    const realTypes = getRealTypesOfItems(arr).sort();
+    const mapCount = getMapCountEveryElementsInArray(realTypes);
+    const matrix = [];
+    mapCount.forEach((val, key) =>
+    {
+        matrix.push([key, val]);
+    });
+    return matrix;
     // Return an array of arrays with a type and count of items
     // with this type in the input array, sorted by type.
     // Like an Object.entries() result: [['boolean', 3], ['string', 5]]
@@ -273,3 +298,19 @@ test('Counted unique types are sorted', countRealTypes([{}, null, true, !null, !
 ]);
 
 // Add several positive and negative tests
+test('Counted unique types are sorted', countRealTypes([{}, 3, 5, 7, !!null]), [
+    ['boolean', 1],
+    ['number', 3],
+    ['object', 1],
+]);
+
+test('Counted unique types are sorted', countRealTypes([{}, 3, 5, new Date(), !!null, new Map()]), [
+    ['boolean', 1],
+    ['date', 1],
+    ['map', 1],
+    ['number', 2],
+    ['object', 1],
+]);
+
+test('Counted unique types are sorted', countRealTypes([]), [
+]);
