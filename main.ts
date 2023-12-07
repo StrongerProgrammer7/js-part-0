@@ -62,6 +62,75 @@ const allItemsHaveTheSameType = (arr:Array<unknown>): boolean =>
     return true;
 };
 
+const getRealTypeNumber = (value:number):string =>
+{
+    if (isNaN(value) === true)
+    {
+        return 'NaN';
+    }
+    else if (isFinite(value) === false)
+    {
+        return 'Infinity';
+    }
+
+    return typeof value;
+};
+
+const getRealTypeObject = (value:object | null):string =>
+{
+    if (value instanceof Array)
+    {
+        return 'array';
+    }
+    else if (value instanceof Date)
+    {
+        return 'date';
+    }
+    else if (value instanceof RegExp)
+    {
+        return 'regexp';
+    }
+    else if (value instanceof Set)
+    {
+        return 'set';
+    }
+    else if (value instanceof Map)
+    {
+        return 'map';
+    }
+    else if (areEqual(null, value))
+    {
+        return 'null';
+    }
+    return typeof value;
+};
+
+const getRealType = (value:unknown):string =>
+{
+    if (typeof value === 'number')
+    {
+        return getRealTypeNumber(value);
+    }
+    else if (typeof value === 'object')
+    {
+        return getRealTypeObject(value);
+    }
+    return typeof value;
+};
+
+const getRealTypesOfItems = (arr:Array<unknown>):Array<string> =>
+{
+
+    const realTypes:Array<string> = [];
+    for (let i = 0; i < arr.length; i++)
+    {
+        const realType = getRealType(arr[i]);
+        realTypes.push(realType);
+    }
+    return realTypes;
+};
+
+
 // Tests
 
 testBlock('getType');
@@ -100,3 +169,63 @@ test(
 );
 
 test('Values like an object', allItemsHaveTheSameType([{}]), true);
+
+testBlock('getTypesOfItems VS getRealTypesOfItems');
+
+const knownTypes = [
+    true,
+    777,
+    'hard..',
+    [1],
+    {},
+    () =>
+{},
+    undefined,
+    null,
+    NaN,
+    Infinity,
+    new Date(),
+    new RegExp(''),
+    new Set(),
+    BigInt('1'),
+    Symbol(undefined),
+    new Map(),
+];
+
+test('Check basic types', getTypesOfItems(knownTypes), [
+    'boolean',
+    'number',
+    'string',
+    'object',
+    'object',
+    'function',
+    'undefined',
+    'object',
+    'number',
+    'number',
+    'object',
+    'object',
+    'object',
+    'bigint',
+    'symbol',
+    'object',
+]);
+
+test('Check real types', getRealTypesOfItems(knownTypes), [
+    'boolean',
+    'number',
+    'string',
+    'array',
+    'object',
+    'function',
+    'undefined',
+    'null',
+    'NaN',
+    'Infinity',
+    'date',
+    'regexp',
+    'set',
+    'bigint',
+    'symbol',
+    'map',
+]);
