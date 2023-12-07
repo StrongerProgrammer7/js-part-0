@@ -120,7 +120,6 @@ const getRealType = (value:unknown):string =>
 
 const getRealTypesOfItems = (arr:Array<unknown>):Array<string> =>
 {
-
     const realTypes:Array<string> = [];
     for (let i = 0; i < arr.length; i++)
     {
@@ -130,7 +129,44 @@ const getRealTypesOfItems = (arr:Array<unknown>):Array<string> =>
     return realTypes;
 };
 
+const everyItemHasAUniqueRealType = (arr:Array<unknown>):boolean =>
+{
+    if (arr.length === 0)
+    {
+        return true;
+    }
+    const realTypes = new Set(getRealTypesOfItems(arr));
+    return realTypes.size === arr.length;
+};
 
+const getMapCountEveryElementsInArray = (arr:Array<string>):Map<string,number> =>
+{
+    const map:Map<string, number> = new Map();
+    for (let i = 0; i < arr.length; i++)
+    {
+        if (map.has(arr[i]) === true)
+        {
+            map.set(arr[i], map.get(arr[i]) + 1);
+        }
+        else
+        {
+            map.set(arr[i], 1);
+        }
+    }
+    return map;
+};
+
+const countRealTypes = (arr:Array<unknown>):Array<Array<string | number>> =>
+{
+    const realTypes = getRealTypesOfItems(arr).sort();
+    const mapCount = getMapCountEveryElementsInArray(realTypes);
+    const matrix = [];
+    mapCount.forEach((val, key) =>
+    {
+        matrix.push([key, val]);
+    });
+    return matrix;
+};
 // Tests
 
 testBlock('getType');
@@ -228,4 +264,36 @@ test('Check real types', getRealTypesOfItems(knownTypes), [
     'bigint',
     'symbol',
     'map',
+]);
+
+testBlock('countRealTypes');
+
+test('Count unique types of array items', countRealTypes([true, null, !null, !!null, {}]), [
+    ['boolean', 3],
+    ['null', 1],
+    ['object', 1],
+]);
+
+test('Counted unique types are sorted', countRealTypes([{}, null, true, !null, !!null]), [
+    ['boolean', 3],
+    ['null', 1],
+    ['object', 1],
+]);
+
+// Add several positive and negative tests
+test('Counted unique types are sorted', countRealTypes([{}, 3, 5, 7, !!null]), [
+    ['boolean', 1],
+    ['number', 3],
+    ['object', 1],
+]);
+
+test('Counted unique types are sorted', countRealTypes([{}, 3, 5, new Date(), !!null, new Map()]), [
+    ['boolean', 1],
+    ['date', 1],
+    ['map', 1],
+    ['number', 2],
+    ['object', 1],
+]);
+
+test('Counted unique types are sorted', countRealTypes([]), [
 ]);
