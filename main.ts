@@ -9,7 +9,7 @@ const testBlock: NameTestBlock = (name) =>
 
 const areEqual = (a:unknown, b:unknown):boolean =>
 {
-    return a?.toString() === b?.toString();
+    return JSON.stringify(a) === JSON.stringify(b);
 };
 
 const test = (whatWeTest:string, actualResult:unknown, expectedResult:unknown):void =>
@@ -297,3 +297,13 @@ test('Counted unique types are sorted', countRealTypes([{}, 3, 5, new Date(), !!
 
 test('Counted unique types are sorted', countRealTypes([]), [
 ]);
+
+test('Are euqal num - str?',areEqual(1,'1'),false);
+test('Are euqal str -str ?',areEqual('1','1'),true);
+test('Are euqal num = num ?',areEqual(1,1),true);
+test('Are euqal num = arr?',areEqual(1,[1,2,3]),false);
+test('Are euqal? arr num - arr multi',areEqual([1,2,3],[1,'2',3]),false);
+test('Are euqal? arr num - arr num',areEqual([1,2],[1,2]),true);
+test('Are euqal? {} {}',areEqual({},{}),true);
+test('Are euqal? {elem} {}',areEqual({obj:1},{}),false);
+test('Are euqal? {elem} {elem}',areEqual({obj:1},{obj:1}),true);
